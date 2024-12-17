@@ -1,5 +1,6 @@
 @echo off
 :menu
+cls
 echo ===================================
 echo       Windows Utility Menu
 echo ===================================
@@ -7,13 +8,13 @@ echo 1. Get IP Address
 echo 2. Make Traceroute
 echo 3. Resolve DNS Name
 echo 4. Encrypt Text (Caesar)
-echo 5. Decrypt Text (Caesar)
+echo 5. Decrypt Text
 echo 6. Encrypt File (Caesar)
-echo 7. Decrypt File (Caesar)
+echo 7. Decrypt File
 echo 8. Compress File (LZ77)
-echo 9. Decompress File (LZ77)
-echo 10. Calculate Hash Value
-echo 11. Exit
+echo 9. Decompress File
+echo 10. Calculate Hash Value (Text)
+echo 0. Exit
 echo ===================================
 set /p choice="Select an option: "
 
@@ -27,10 +28,11 @@ if "%choice%"=="7" goto decrypt_file
 if "%choice%"=="8" goto compress_file
 if "%choice%"=="9" goto decompress_file
 if "%choice%"=="10" goto hash_value
-if "%choice%"=="11" exit
+if "%choice%"=="0" goto exit
 goto menu
 
 :get_ip
+echo Displaying IP Address:
 ipconfig | findstr "IPv4"
 ipconfig | findstr "IPv6"
 pause
@@ -49,107 +51,37 @@ pause
 goto menu
 
 :encrypt_text
-set /p text="Enter text to encrypt: "
-set /p shift="Enter shift value: "
-echo Encrypting text: %text% with shift value: %shift%
-powershell -ExecutionPolicy Bypass -File "C:\Users\HP\OneDrive\Documents\chp\caesar_cipher_encrypt.ps1" -text "%text%" -shift %shift%
+caesar_cipher_encrypt.exe 
 pause
 goto menu
-
 
 :decrypt_text
-set /p text="Enter text to decrypt: "
-set /p shift="Enter shift value used for encryption: "
-echo Decrypting text: %text% with shift value: %shift%
-powershell -ExecutionPolicy Bypass -File "C:\Users\HP\OneDrive\Documents\chp\caesar_cipher_decrypt.ps1" -text "%text%" -shift %shift%
+caesar_cipher_decrypt.exe 
 pause
 goto menu
-
-
-
 
 :encrypt_file
-set /p file="Enter the file path to encrypt: "
-set "scriptPath=C:\Users\HP\OneDrive\Documents\chp\file_caesar_cipher.ps1"
-
-echo Checking if script exists at %scriptPath%...
-if not exist "%scriptPath%" (
-    echo Error: The script '%scriptPath%' does not exist.
-    echo Make sure the script is located at the specified path.
-    pause
-    goto menu
-)
-
-echo Script found. Proceeding with encryption...
-powershell -ExecutionPolicy Bypass -File "%scriptPath%" -filePath "%file%" -shift 3
-echo File encrypted successfully.
+caesar_cipher_encrypt_file.exe
 pause
 goto menu
-
 
 :decrypt_file
-set /p file="Enter the file path to decrypt: "
-set /p shift="Enter shift value used for encryption: "
-set "scriptPath=C:\Users\HP\OneDrive\Documents\chp\file_caesar_cipher_decrypt.ps1"
-if not exist "%scriptPath%" (
-    echo Error: The script '%scriptPath%' does not exist.
-    pause
-    goto menu
-)
-
-if not exist "%file%" (
-    echo Error: The file '%file%' does not exist.
-    pause
-    goto menu
-)
-
-echo Decrypting file...
-powershell -ExecutionPolicy Bypass -File "%scriptPath%" -filePath "%file%" -shift %shift%
-echo File decrypted successfully.
+caesar_cipher_decrypt_file.exe
 pause
 goto menu
-
-
 
 :compress_file
-set /p file="Enter the file path to compress: "
-echo File path provided: "%file%"  REM Debugging line to check for spaces or issues in the path
-set "scriptPath=C:\Users\HP\OneDrive\Documents\chp\lz77_compress.ps1"
-
-if not exist "%scriptPath%" (
-    echo Error: The script '%scriptPath%' does not exist.
-    pause
-    goto menu
-)
-
-if not exist "%file%" (
-    echo Error: The file '%file%' does not exist.
-    pause
-    goto menu
-)
-
-echo File path is valid. Proceeding with compression...
-powershell -ExecutionPolicy Bypass -File "%scriptPath%" -filePath "%file%"
-echo File compressed successfully.
+lz77_compress_file.exe
 pause
 goto menu
 
-
-
 :decompress_file
-set /p file="Enter the file path to decompress: "
-powershell -ExecutionPolicy Bypass -File "C:\Users\HP\OneDrive\Documents\chp\lz77_decompress.ps1" -filePath "%file%"
-echo File decompressed successfully.
+lz77_decompress_file.exe
 pause
 goto menu
 
 :hash_value
-set /p input="Enter text or file path: "
-echo Calculating hashes...
-certutil -hashfile "%input%" > def-hash-%input%.txt
-certutil -hashfile "%input%" MD5 > MD5-%input%.txt
-certutil -hashfile "%input%" SHA256 > SHA256-%input%.txt
-echo Hash values saved to def-hash-%input%.txt, MD5-%input%.txt, and SHA256-%input%.txt.
+hash_value.exe
 pause
 goto menu
 
